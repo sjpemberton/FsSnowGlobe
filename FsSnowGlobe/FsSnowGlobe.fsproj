@@ -35,6 +35,7 @@
     <DocumentationFile>bin\Release\FsSnowGlobe.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Events.fs" />
     <Compile Include="GlobeViewModel.fs" />
     <Resource Include="MainWindow.xaml" />
     <Compile Include="MainWindow.xaml.fs" />

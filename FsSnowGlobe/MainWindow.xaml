@@ -2,12 +2,22 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:ViewModels;assembly=FsSnowGlobe"
+    xmlns:converters="clr-namespace:Converters;assembly=FsSnowGlobe"
     xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
     Title="F# Snow Globe" Height="600" Width="800" WindowStyle="None" AllowsTransparency="True" Background="Transparent" >
     <Window.DataContext>
-        <local:MainViewModel/>
+        <local:GlobeViewModel/>
     </Window.DataContext>
-    <Grid MouseLeftButtonDown="">
+    <Window.Resources>
+        <converters:MoveConverter x:Key="moveConverter" />
+    </Window.Resources>
+    <Grid>
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseMove">
+                <fsxaml:EventToCommand Command="{Binding MouseCommand}" EventArgsConverter="{StaticResource moveConverter}" />
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
