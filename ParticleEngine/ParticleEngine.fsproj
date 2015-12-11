@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Particle.fs" />
-    <None Include="Script.fsx" />
+    <Compile Include="Engine.fs" />
+    <Compile Include="Snow.fs" />
+    <Compile Include="Mist.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

@@ -1,45 +1,44 @@
 ﻿namespace Events
 
 open System
-open System.Windows
 open System.Windows.Controls
 open System.Windows.Input
 open System.Windows.Markup
 open FsXaml
-
-type Point = 
-    { X : float
-      Y : float }
+open Engine
+open Particle
 
 type DragDirection = float
 
-type DragStatus = 
-    | Dragging
-    | NotDragging
-
-type DragEvent = 
-    | StatusChanged of status : DragStatus
-    | PositionChanged of status : DragStatus * position : Point * DragDirection
+type MouseEvent = 
+    { Status : MouseStatus
+      Pos : Point }
 
 module EventConverters = 
-    let dragConverter (args : MouseEventArgs) = 
-        let dragging = 
-            if args.LeftButton = MouseButtonState.Pressed then DragStatus.Dragging
-            else DragStatus.NotDragging
+    open System.Windows
+
+    let forceConverter (args : MouseEventArgs) = 
+        let status = 
+            match args with
+            | repulse when args.LeftButton = MouseButtonState.Pressed -> MouseStatus.LeftDown
+            | attract when args.RightButton = MouseButtonState.Pressed -> MouseStatus.RightDown
+            | _ -> MouseStatus.Released
         
         let pt = args.GetPosition(args.OriginalSource :?> IInputElement)
-        PositionChanged(dragging, { X = pt.X; Y = pt.Y }, 0.0)
+        { Status = status
+          Pos = { X = pt.X; Y = pt.Y } }
     
-    let statusConverter (args : MouseButtonEventArgs) = 
-        match args.LeftButton with
-        | MouseButtonState.Pressed -> StatusChanged(Dragging)
-        | _ -> StatusChanged(NotDragging)
-    
-    let Default = StatusChanged(NotDragging)
+    let DefaultMouseStatus = 
+        { Status = Released
+          Pos = { X = 0.0; Y = 0.0 } }
+
+    let moveConverter (args : EventArgs) = 
+        {X = 0.0; Y = 0.0}
 
 // The converters to convert from MouseEventArgs and MouseButtonEventArgs -> DragEvent
-type MoveConverter() = 
-    inherit EventArgsConverter<MouseEventArgs, DragEvent>(EventConverters.dragConverter, EventConverters.Default)
+type MouseConverter() = 
+    inherit EventArgsConverter<MouseEventArgs, MouseEvent>(EventConverters.forceConverter, EventConverters.DefaultMouseStatus)
 
-type ButtonCaptureConverter() = 
-    inherit EventArgsConverter<MouseButtonEventArgs, DragEvent>(EventConverters.statusConverter, EventConverters.Default)
+
+type MoveConverter() = 
+    inherit EventArgsConverter<EventArgs, Point>(EventConverters.moveConverter, {X = 0.0; Y = 0.0})
