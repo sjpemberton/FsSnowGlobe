@@ -1,14 +1,8 @@
 ﻿namespace ViewModels
 
 open System
-open System.Windows
 open FSharp.ViewModule
-open FSharp.ViewModule.Helpers
-open FsXaml
-open Events
-open System.Windows.Shapes
 open Particle
-open Mist
 open System.Windows.Threading
 open System.Collections.ObjectModel
 open Engine
@@ -16,7 +10,7 @@ open System.Windows.Input
 open Microsoft.Win32
 open System.Windows.Media.Imaging
 
-type NotifyingPoint(x,y,scale,rotation,alpha, height,width) as this = 
+type NotifyingPoint(x,y,scale,rotation,alpha) as this = 
     inherit ViewModelBase()
 
     let rotation = this.Factory.Backing(<@this.Rotation@>, rotation)
@@ -34,11 +28,11 @@ type NotifyingPoint(x,y,scale,rotation,alpha, height,width) as this =
     member this.Y with get () = y.Value and set (v) = y.Value <- v
 
 type GlobeViewModel() as this = 
-    inherit EventViewModelBase<MouseEvent>() //If not using events, change base
+    inherit EventViewModelBase<EngineEvent>() //If not using events, change base
 
     let img = this.Factory.Backing(<@this.BackgroundImageSource@>, new BitmapImage())
-    let fps = this.Factory.Backing(<@this.Fps@>, "FPS: 0")
-
+    let particles = ObservableCollection<NotifyingPoint>() //Snow
+    let mistParticles = ObservableCollection<NotifyingPoint>() //Mist
     let frameTimer = new DispatcherTimer()
 
     let createBackgroundImg () =
@@ -50,43 +44,11 @@ type GlobeViewModel() as this =
             img.Value <- new BitmapImage(new Uri(dialog.FileName))
 
     let loadImgCommand = this.Factory.CommandSync createBackgroundImg 
-  
-    let snow = Snow.snowAnimation
-    let mist = Mist.mistAnimation
-    let particlesPerSec = 10
-
     let mouseCommand = FunCommand((fun o ->
-        let mEvent = o :?> MouseEvent
-        snow.RaiseMouseEvent mEvent.Status mEvent.Pos), fun _ -> true) :> ICommand
-
-    let particles = ObservableCollection<NotifyingPoint>() //Snow
-    let mistParticles = ObservableCollection<NotifyingPoint>() //Mist
-
-    let mutable elapsed = 0.0
-    let mutable totalElapsed = 0.0
-    let mutable lastTick = 0
-    let mutable currentTick = 0
-    let mutable frameCount = 0
-    let mutable frameCountTime = 0.0
-    let mutable frameRate = 0
-
-    let updateFps () = 
-        currentTick <- Environment.TickCount;
-        elapsed <- float (currentTick - lastTick) / 1000.0;
-        totalElapsed <- totalElapsed + elapsed
-        lastTick <- currentTick;
-
-        frameCount <- frameCount + 1
-        frameCountTime <- frameCountTime + elapsed;
-        match frameCountTime with
-        | a when frameCountTime >= 1.0 ->
-            frameCountTime <- frameCountTime - 1.0
-            frameRate <- frameCount
-            frameCount <- 0
-            fps.Value <- "FPS: " + frameRate.ToString()
-        | _ -> ()
+        let mEvent = o :?> EngineEvent
+        Snow.Animation.RaiseMouseEvent mEvent), fun _ -> true) :> ICommand
         
-
+    // Mutable state for UI
     let updateParticleUI (collection: ObservableCollection<NotifyingPoint>) particles = 
         particles 
         |> List.iteri (fun i p-> 
@@ -100,26 +62,26 @@ type GlobeViewModel() as this =
             | _, dead when p.TimeToLive < 0.0 && i < this.Particles.Count -> 
                 collection.[i].Visible <- false
             | _,_ ->
-                collection.Add(new NotifyingPoint(p.Coords.X, p.Coords.Y,p.Scale,p.Rotation, p.Alpha, Math.Round(8.0 * p.Scale, 2) ,Math.Round(8.0 * p.Scale, 2))))
+                collection.Add(new NotifyingPoint(p.Coords.X, p.Coords.Y,p.Scale,p.Rotation, p.Alpha)))
 
-    let onFrame e = 
-        updateFps ()
-        let snowState = snow.Update elapsed
-        let mistState = mist.Update elapsed 
+    let onFrame (_, elapsed) =
+        let snowState = Snow.Animation.Update elapsed
+        let mistState = Mist.Animation.Update elapsed 
         snowState.Particles |> updateParticleUI particles
         mistState.Particles |> updateParticleUI mistParticles
-        |> ignore
 
     do //TODO test timer with Asyncs
-        lastTick <- Environment.TickCount;
-        frameTimer.Tick.Add(onFrame);
-        frameTimer.Interval <- TimeSpan.FromSeconds(0.0016);
+        frameTimer.Tick
+        |> Observable.scan (fun (previous, elapsed) _  -> 
+            (float Environment.TickCount, (float Environment.TickCount - previous) / 1000.0)) (float Environment.TickCount, float Environment.TickCount)
+        |> Observable.subscribe onFrame
+        |> ignore
+        frameTimer.Interval <- TimeSpan.FromSeconds(1.0 / 120.0);
         frameTimer.Start();
     
     member x.MouseCommand = mouseCommand
     member x.LoadImage = loadImgCommand
-    member x.RaiseWindowMove(p:Point) = snow.RaiseMoveEvent p
+    member x.RaiseWindowMove(p:Point) = Snow.Animation.RaiseMoveEvent p
     member x.Particles: ObservableCollection<NotifyingPoint> = particles
     member x.MistParticles: ObservableCollection<NotifyingPoint> = mistParticles
-    member x.Fps with get () = fps.Value and set (v) = fps.Value <- v
     member x.BackgroundImageSource with get () = img.Value 

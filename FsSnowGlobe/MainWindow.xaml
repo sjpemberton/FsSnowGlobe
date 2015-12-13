@@ -11,7 +11,6 @@
         <local:GlobeViewModel />
     </Window.DataContext>
     <Window.Resources>
-        <events:MoveConverter x:Key="moveConverter" />
         <events:MouseConverter x:Key="mouseConverter" />
         <BooleanToVisibilityConverter x:Key="boolVis" />
     </Window.Resources>
@@ -29,7 +28,6 @@
         <Border Background="#AA555555" Opacity="0.7" />
         
         <ItemsControl ItemsSource="{Binding MistParticles}">
-            
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Grid.Row="0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
@@ -61,7 +59,6 @@
         </ItemsControl>
 
         <ItemsControl ItemsSource="{Binding Particles}">
-            
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas Grid.Row="0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
@@ -85,15 +82,9 @@
                     <Setter Property="Image.Visibility" Value="{Binding Visible, Converter={StaticResource boolVis}}"  />
                     <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
                     <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
-                    
-
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-
-        <DockPanel Background="#01000000">
-            <Label Visibility="Visible" Name="FrameRateLabel" DockPanel.Dock="Top" Foreground="Green"  Content="{Binding Fps}"/>
-        </DockPanel>
         <Button Command="{Binding LoadImage}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="#AA777777">Load Background Image</Button>
     </Grid>
 </Window>

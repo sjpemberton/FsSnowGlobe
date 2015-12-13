@@ -42,6 +42,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core.fs" />
     <Compile Include="Particle.fs" />
     <Compile Include="Engine.fs" />
     <Compile Include="Snow.fs" />
