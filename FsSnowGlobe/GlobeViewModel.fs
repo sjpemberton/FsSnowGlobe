@@ -15,6 +15,7 @@ type NotifyingPoint(x,y,scale,rotation,alpha) as this =
 
     let rotation = this.Factory.Backing(<@this.Rotation@>, rotation)
     let scale = this.Factory.Backing(<@this.Scale@>, scale)
+
     let alpha = this.Factory.Backing(<@this.Alpha@>, alpha)
     let visible = this.Factory.Backing(<@this.Visible@>, true)
     let x = this.Factory.Backing(<@this.X@>, x)
@@ -59,8 +60,6 @@ type GlobeViewModel() as this =
                 collection.[i].Y <- p.Coords.Y
                 collection.[i].Rotation <- p.Rotation
                 collection.[i].Alpha <- p.Alpha
-            | _, dead when p.TimeToLive < 0.0 && i < this.Particles.Count -> 
-                collection.[i].Visible <- false
             | _,_ ->
                 collection.Add(new NotifyingPoint(p.Coords.X, p.Coords.Y,p.Scale,p.Rotation, p.Alpha)))
 
@@ -76,12 +75,12 @@ type GlobeViewModel() as this =
             (float Environment.TickCount, (float Environment.TickCount - previous) / 1000.0)) (float Environment.TickCount, float Environment.TickCount)
         |> Observable.subscribe onFrame
         |> ignore
-        frameTimer.Interval <- TimeSpan.FromSeconds(1.0 / 120.0);
+        frameTimer.Interval <- TimeSpan.FromSeconds(1.0 / 60.0);
         frameTimer.Start();
     
     member x.MouseCommand = mouseCommand
     member x.LoadImage = loadImgCommand
-    member x.RaiseWindowMove(p:Point) = Snow.Animation.RaiseMoveEvent p
+    member x.RaiseWindowMove(v:Vector) = Snow.Animation.RaiseMoveEvent v
     member x.Particles: ObservableCollection<NotifyingPoint> = particles
     member x.MistParticles: ObservableCollection<NotifyingPoint> = mistParticles
     member x.BackgroundImageSource with get () = img.Value 

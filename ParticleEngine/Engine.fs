@@ -5,7 +5,7 @@ open System
 
 type State = 
     { Particles : list<Particle>
-      Forces : list<Point -> Point>
+      Forces : list<Vector -> Vector>
       Colliders : list<Particle -> Particle> 
       Counter: float}
 
@@ -15,12 +15,12 @@ type MouseButtonStatus =
     | Released
 
 type EngineEvent = 
-    | MouseEvent of MouseButtonStatus * position : Point
+    | MouseEvent of MouseButtonStatus * position : Vector
 
-type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders) as x = 
+type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders) = 
 
     let mouseEvent = new Event<EngineEvent>()
-    let moveEvent = new Event<Point>()
+    let moveEvent = new Event<Vector>()
     
     let mutable state = 
         { Particles = list<Particle>.Empty
@@ -44,23 +44,23 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
             let replaced = replace (fun p -> p.Locked || p.TimeToLive < 0.0) (particleEmitter()) accu //TODO - lock the particle that move off the screen to clean them up easier
             match replaced with //When max, find first dead and replace it (We could move to a know position or other pool but difficult to keep in step)
             | Some replaced -> 
-                if toSpawn > 1.0 then spawnParticles (toSpawn - 1.0) replaced else replaced
-            | _ -> accu |> List.rev
+                if toSpawn > 1.0 then spawnParticles (toSpawn - 1.0) replaced |> List.rev else replaced |> List.rev
+            | _ -> accu
         | b when toSpawn > 0.0 -> 
             particleEmitter() :: accu |> spawnParticles (toSpawn - 1.0)
-        | _ -> accu |> List.rev //Must flip back
+        | _ -> accu
     
     let applyForce particle accel force =
         particle.Coords
         |> force
-        |> sumPoints accel
+        |> sum accel
 
     //Apply forces to particles Coords then calculate accel based on F / M (Newton's 2nd law of motion)
     //A = F/M
     let calcAcceleration particle = 
         { particle with Acceleration = 
                             state.Forces
-                            |> List.fold (applyForce particle) defaultPoint
+                            |> List.fold (applyForce particle) defaultVector
                             |> fun f -> { f with X = f.X / particle.Mass
                                                  Y = f.Y / particle.Mass }}
     
@@ -70,16 +70,34 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
         |> match state.Colliders with
            | [] -> id
            | list -> (list |> List.fold (>>) id)
+
+    let updateAlpha p =
+        match 1.0 - p.TimeToLive / p.Life with
+        | lifeRatio when lifeRatio <= 0.25
+            -> { p with Alpha = lifeRatio / 0.25 * p.AlphaMod }
+        | lifeRatio when lifeRatio >= 0.75 
+            -> { p with Alpha = (1.0 - lifeRatio) / 0.25 * p.AlphaMod }
+        | _ -> { p with Alpha = p.AlphaMod }
+
+    let updatePosition delta p =
+        match p.Locked with
+        | true -> { p with TimeToLive = p.TimeToLive - delta}
+        | false ->{ p with TimeToLive = p.TimeToLive - delta
+                           Coords = sum p.Coords {X = p.Velocity.X * delta; Y = p.Velocity.Y * delta} 
+                           Velocity = sum p.Velocity {X = p.Acceleration.X * delta; Y = p.Acceleration.Y * delta} 
+                           Rotation = p.Rotation + (p.AngularVelocity * delta)}
+
     
     //State holds the current state of the sim - forces, particles etc
     let tick secs state = 
         let updatedState = tick secs state // Tick updates forces
         { updatedState with Particles = 
-                                spawnParticles (secs * spawnRate) (updatedState.Particles |> List.rev) //Flip so oldest particles are processed first
+                                spawnParticles (secs * spawnRate) updatedState.Particles 
                                 |> List.map (fun p -> 
                                        calcAcceleration p
                                        |> applyColliders
-                                       |> UpdateParticle secs) }
+                                       |> updatePosition secs
+                                       |> updateAlpha) }
     
     //Public API to control when the simulation is updated from elsewhere
     member this.Update(secs) = 

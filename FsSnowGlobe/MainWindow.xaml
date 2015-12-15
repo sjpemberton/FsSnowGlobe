@@ -82,6 +82,7 @@
                     <Setter Property="Image.Visibility" Value="{Binding Visible, Converter={StaticResource boolVis}}"  />
                     <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
                     <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
+                    <Setter Property="Image.Opacity" Value="{Binding Alpha}" />
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
