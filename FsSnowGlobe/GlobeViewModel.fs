@@ -52,6 +52,7 @@ type GlobeViewModel() as this =
     // Mutable state for UI
     let updateParticleUI (collection: ObservableCollection<NotifyingPoint>) particles = 
         particles 
+        |> List.rev
         |> List.iteri (fun i p-> 
             match i,p with
             | x,_ when i < collection.Count ->

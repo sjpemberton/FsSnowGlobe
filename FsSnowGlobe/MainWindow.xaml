@@ -36,7 +36,14 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate >
-                    <Image Source="Mist.png" Width="256" Height="256" Opacity="0.3"  />
+                    <Image Source="Mist.png" Width="256" Height="256" Opacity="0.3" >
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform  Angle="{Binding Rotation}" />
+                                <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}"  />
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemContainerStyle>
@@ -46,14 +53,6 @@
                     <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
                     <Setter Property="Image.Opacity" Value="{Binding Alpha}" />
                     <Setter Property="Image.RenderTransformOrigin" Value="0.5,0.5" />
-                    <Setter Property="Image.RenderTransform">
-                        <Setter.Value>
-                            <TransformGroup>
-                                <RotateTransform  Angle="{Binding Rotation}" /> 
-                                <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}"  />
-                            </TransformGroup>
-                        </Setter.Value>
-                    </Setter>
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
