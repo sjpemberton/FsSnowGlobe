@@ -5,13 +5,13 @@ open Particle
 open System
 
 let emitter = BoxEmitter {X = -50.0; Y= -40.0} {X = 1280.0; Y=100.0}
-let rand = Random()
+let private rand = Random()
 
 let CreateSnowFlake () = 
     let life = 4.0 * (rand.NextDouble() * 2.0)
     { Coords = emitter ()
-      Img = ""
-      Mass = 0.002
+      Img = "SnowFlake.png"
+      Mass = (rand.NextDouble() / 1000.0) + 0.001
       Alpha = 1.0
       AlphaMod = 1.0
       Velocity = toCartesian {Radius = 30.0; Theta = rand.NextDouble() * Math.PI * 2.0}
@@ -36,7 +36,7 @@ let wallCollider particle =
         Coords = { X = constrainCoord 10.0 1270.0 particle.Coords.X
                    Y = constrainCoord 10.0 710.0 particle.Coords.Y}}
 
-let gravity p = {X = 0.0; Y = 9.81 / 50.0}
+let gravity p = {X = 0.0; Y = 9.81 / 60.0}
 let wind p = {X = 0.5; Y = 0.0}
 
 //Mutable forces for toggling in events
