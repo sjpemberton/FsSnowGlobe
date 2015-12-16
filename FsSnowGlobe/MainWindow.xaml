@@ -6,27 +6,26 @@
     xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
     fsxaml:ViewController.Custom="{x:Type local:MainViewController}"
-    Title="F# Advent 2015 - Snow Globe" Height="720" Width="1280" WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" Background="Black" >
+    Title="F# Advent 2015 - Snow Globe" Height="760"  Width="1280" WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" Background="Black" >
     <Window.DataContext>
         <local:GlobeViewModel />
     </Window.DataContext>
     <Window.Resources>
         <events:MouseConverter x:Key="mouseConverter" />
-        <BooleanToVisibilityConverter x:Key="boolVis" />
     </Window.Resources>
-    <Grid Background="Black">
+    <Grid Background="#AA344759" Height="720">
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="MouseMove">
                 <fsxaml:EventToCommand Command="{Binding MouseCommand}" EventArgsConverter="{StaticResource mouseConverter}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="720" />
         </Grid.RowDefinitions>
-        
+
         <Image Source="{Binding BackgroundImageSource}" Width="1280" Height="720"  RenderOptions.BitmapScalingMode="HighQuality" />
-        <Border Background="#AA555555" Opacity="0.7" />
-        
+        <!--<Border Background="#AA555555" Opacity="0.7" />-->
+
         <ItemsControl ItemsSource="{Binding MistParticles}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -48,7 +47,6 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemContainerStyle>
                 <Style>
-                    <Setter Property="Image.Visibility" Value="{Binding Visible, Converter={StaticResource boolVis}}"  />
                     <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
                     <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
                     <Setter Property="Image.Opacity" Value="{Binding Alpha}" />
@@ -78,13 +76,12 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemContainerStyle>
                 <Style>
-                    <Setter Property="Image.Visibility" Value="{Binding Visible, Converter={StaticResource boolVis}}"  />
                     <Setter Property="Canvas.Left" Value="{Binding Path=X}" />
                     <Setter Property="Canvas.Top" Value="{Binding Path=Y}" />
                     <Setter Property="Image.Opacity" Value="{Binding Alpha}" />
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-        <Button Command="{Binding LoadImage}" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Transparent" Foreground="#AA777777">Load Background Image</Button>
+        <Button Grid.Row="0" Command="{Binding LoadImage}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Foreground="#AA777777">Load Background Image</Button>
     </Grid>
 </Window>
