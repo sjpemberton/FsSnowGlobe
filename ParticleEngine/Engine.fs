@@ -7,7 +7,7 @@ type State =
     { Particles : list<Particle>
       Forces : list<Vector -> Vector>
       Colliders : list<Particle -> Particle> 
-      Counter: float}
+      Elapsed: float}
 
 type MouseButtonStatus = 
     | LeftDown
@@ -26,7 +26,7 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
         { Particles = list<Particle>.Empty
           Forces = forces
           Colliders = colliders
-          Counter = 0.0 }
+          Elapsed = 0.0 }
     
     let replace test replaceWith list = 
         let rec search acc = 
@@ -101,7 +101,7 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
     
     //Public API to control when the simulation is updated from elsewhere
     member this.Update(secs) = 
-        state <- tick secs state
+        state <- tick secs {state with Elapsed = state.Elapsed + secs}
         state
 
     member this.RaiseMouseEvent status = status |> mouseEvent.Trigger

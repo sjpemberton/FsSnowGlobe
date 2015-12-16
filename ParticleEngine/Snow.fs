@@ -44,12 +44,9 @@ let mutable private mouseForce = fun _ -> {X = 0.0; Y = 0.0}
 let mutable private moveForce = fun _ -> {X = 0.0; Y = 0.0}
 
 let private tick delta state =
-    let step = state.Counter + delta;
-    let wind = fun _ -> { X = -(Math.Sin step * 0.5 + 0.5) / 10.0;
-                          Y = Math.Sin(step * 0.5) / 10.0}
-    { state with Forces = [gravity; wind; mouseForce; moveForce]
-                 Colliders = [floorCollider]
-                 Counter = step}
+    let wind = fun _ -> { X = -(Math.Sin state.Elapsed * 0.5 + 0.5) / 10.0;
+                          Y = Math.Sin(state.Elapsed * 0.5) / 10.0}
+    { state with Forces = [gravity; wind; mouseForce; moveForce]}
 
 let Animation = new Animation(10.0, 1000, CreateSnowFlake, tick, [gravity; wind], [floorCollider]) 
 
