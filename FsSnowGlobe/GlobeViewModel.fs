@@ -67,13 +67,14 @@ type MainViewModel() as this =
         mistState.Particles |> updateParticleUI mistParticles
 
     do //TODO test timer with Asyncs
-        frameTimer.Tick
-        |> Observable.scan (fun (previous, elapsed) _  -> 
-            (float Environment.TickCount, (float Environment.TickCount - previous) / 1000.0)) (float Environment.TickCount, float Environment.TickCount)
-        |> Observable.subscribe onTick
-        |> ignore
-        frameTimer.Interval <- TimeSpan.FromSeconds(1.0 / 60.0);
-        frameTimer.Start();
+       frameTimer.Tick
+       |> Observable.scan 
+              (fun (previous, elapsed) _ -> (float Environment.TickCount, (float Environment.TickCount - previous) / 1000.0)) 
+              (float Environment.TickCount, float Environment.TickCount)
+       |> Observable.subscribe onTick
+       |> ignore
+       frameTimer.Interval <- TimeSpan.FromSeconds(1.0 / 60.0)
+       frameTimer.Start()
     
     member x.MouseCommand = mouseCommand
     member x.LoadImage = loadImgCommand
