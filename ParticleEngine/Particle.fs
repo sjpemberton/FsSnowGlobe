@@ -15,7 +15,7 @@ type Particle =
       Scale: float
       Locked: bool}
   
-let repulse epicentre strength decayF vec = 
+let exertForce epicentre strength decayF vec = 
     let diff = epicentre |> diff vec 
     let distance = magnitude diff 
     let decay = decayF distance

@@ -68,9 +68,9 @@ let private applyMoveForce points  =
 
 let private applyMouseForce = function
     | MouseEvent(LeftDown, currentPos) ->
-        mouseForce <- repulse currentPos 200.0 (fun d -> 1.0 / (1.0 + d))
+        mouseForce <- exertForce currentPos 200.0 (fun d -> 1.0 / (1.0 + d))
     | MouseEvent(RightDown, currentPos) ->
-        mouseForce <- repulse currentPos -200.0 (fun d -> 1.0 / (1.0 + d))
+        mouseForce <- exertForce currentPos -200.0 (fun d -> 1.0 / (1.0 + d))
     |_ -> mouseForce <- fun _ -> {X = 0.0; Y = 0.0}
 
 do

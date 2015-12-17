@@ -28,26 +28,26 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
           Colliders = colliders
           Elapsed = 0.0 }
     
-    let replace test replaceWith list = 
+    let replace test replacement list = 
         let rec search acc = 
             function 
             | [] -> None
             | h :: t -> 
                 match test h with
-                | true -> Some(List.rev t @ replaceWith :: acc)
+                | true -> Some(List.rev t @ replacement :: acc)
                 | false -> search (h :: acc) t
         search [] list
     
-    let rec spawnParticles toSpawn (accu: Particle list) = 
+    let rec spawnParticles toSpawn (accu : Particle list) = 
         match toSpawn with
         | a when accu.Length >= maxParticles -> 
             let replaced = replace (fun p -> p.Locked || p.TimeToLive < 0.0) (particleEmitter()) accu //TODO - lock the particle that move off the screen to clean them up easier
-            match replaced with //When max, find first dead and replace it (We could move to a know position or other pool but difficult to keep in step)
+            match replaced with //When max, find first dead and replace it (We could move to a known position or other pool but difficult to keep in step)
             | Some replaced -> 
-                if toSpawn > 1.0 then spawnParticles (toSpawn - 1.0) replaced |> List.rev else replaced |> List.rev
+                if toSpawn > 1.0 then spawnParticles (toSpawn - 1.0) replaced |> List.rev
+                else replaced |> List.rev
             | _ -> accu
-        | b when toSpawn > 0.0 -> 
-            particleEmitter() :: accu |> spawnParticles (toSpawn - 1.0)
+        | b when toSpawn > 0.0 -> particleEmitter() :: accu |> spawnParticles (toSpawn - 1.0)
         | _ -> accu
     
     let applyForce particle accel force =
@@ -62,9 +62,7 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
                             state.Forces
                             |> List.fold (applyForce particle) defaultVector
                             |> fun f -> { f with X = f.X / particle.Mass
-                                                 Y = f.Y / particle.Mass }}
-    
-    
+                                                 Y = f.Y / particle.Mass }}    
     let applyColliders particle = 
         particle
         |> match state.Colliders with
@@ -86,7 +84,6 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
                            Coords = sum p.Coords {X = p.Velocity.X * delta; Y = p.Velocity.Y * delta} 
                            Velocity = sum p.Velocity {X = p.Acceleration.X * delta; Y = p.Acceleration.Y * delta} 
                            Rotation = p.Rotation + (p.AngularVelocity * delta)}
-
     
     //State holds the current state of the sim - forces, particles etc
     let tick secs state = 
