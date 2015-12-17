@@ -13,7 +13,7 @@ type MainViewController() =
     inherit WindowViewController<MainView>()
 
     let propagate (window:Window) (e:EventArgs) =
-        let vm = window.DataContext :?> GlobeViewModel
+        let vm = window.DataContext :?> MainViewModel
         vm.RaiseWindowMove {X = window.Left; Y = window.Top}
 
     override this.OnLoaded view =

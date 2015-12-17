@@ -25,7 +25,7 @@ type ParticleViewModel(x,y,scale,rotation,alpha) as this =
     member this.X with get () = x.Value and set (v) = x.Value <- v
     member this.Y with get () = y.Value and set (v) = y.Value <- v
 
-type GlobeViewModel() as this = 
+type MainViewModel() as this = 
     inherit EventViewModelBase<EngineEvent>() //If not using events, change base
 
     let img = this.Factory.Backing(<@this.BackgroundImageSource@>, new BitmapImage(new Uri(new Uri(System.AppDomain.CurrentDomain.BaseDirectory), "..\\..\\fsharp2048.png")))

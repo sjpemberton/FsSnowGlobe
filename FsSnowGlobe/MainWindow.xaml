@@ -8,7 +8,7 @@
     fsxaml:ViewController.Custom="{x:Type local:MainViewController}"
     Title="F# Advent 2015 - Snow Globe" Height="760"  Width="1280" WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" Background="Black" >
     <Window.DataContext>
-        <local:GlobeViewModel />
+        <local:MainViewModel />
     </Window.DataContext>
     <Window.Resources>
         <events:MouseConverter x:Key="mouseConverter" />
