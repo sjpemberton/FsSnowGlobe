@@ -77,24 +77,31 @@ type Animation(spawnRate, maxParticles, particleEmitter, tick, forces, colliders
             -> { p with Alpha = (1.0 - lifeRatio) / 0.25 * p.AlphaMod }
         | _ -> { p with Alpha = p.AlphaMod }
 
-    let updatePosition delta p =
+    let updatePosition delta p = 
         match p.Locked with
-        | true -> { p with TimeToLive = p.TimeToLive - delta}
-        | false ->{ p with TimeToLive = p.TimeToLive - delta
-                           Coords = sum p.Coords {X = p.Velocity.X * delta; Y = p.Velocity.Y * delta} 
-                           Velocity = sum p.Velocity {X = p.Acceleration.X * delta; Y = p.Acceleration.Y * delta} 
-                           Rotation = p.Rotation + (p.AngularVelocity * delta)}
+        | true -> { p with TimeToLive = p.TimeToLive - delta }
+        | false -> 
+            { p with TimeToLive = p.TimeToLive - delta
+                     Coords = { X = p.Velocity.X * delta
+                                Y = p.Velocity.Y * delta }
+                              |> sum p.Coords 
+                     Velocity = { X = p.Acceleration.X * delta
+                                  Y = p.Acceleration.Y * delta }
+                                |> sum p.Velocity 
+                     Rotation = p.Rotation + (p.AngularVelocity * delta) }
     
     //State holds the current state of the sim - forces, particles etc
-    let tick secs state = 
-        let updatedState = tick secs state // Tick updates forces
+    let tick delta state = 
+        let updatedState = tick delta state // Tick updates forces
         { updatedState with Particles = 
-                                spawnParticles (secs * spawnRate) updatedState.Particles 
+                                updatedState.Particles
+                                |> List.rev
+                                |> spawnParticles (delta * spawnRate)
                                 |> List.map (fun p -> 
                                        calcAcceleration p
                                        |> applyColliders
-                                       |> updatePosition secs
-                                       |> updateAlpha) }
+                                       |> updateAlpha
+                                       |> updatePosition delta) }
     
     //Public API to control when the simulation is updated from elsewhere
     member this.Update(secs) = 
