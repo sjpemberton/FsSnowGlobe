@@ -51,31 +51,10 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
-      <ItemGroup>
-        <Reference Include="FSharp.ViewModule.Core.Wpf">
-          <HintPath>..\packages\FSharp.ViewModule.Core\lib\net45\FSharp.ViewModule.Core.Wpf.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')" />
   </Choose>
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
-      <ItemGroup>
-        <Reference Include="FsXaml.Wpf.TypeProvider">
-          <HintPath>..\packages\FsXaml.Wpf\lib\net45\FsXaml.Wpf.TypeProvider.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FsXaml.Wpf">
-          <HintPath>..\packages\FsXaml.Wpf\lib\net45\FsXaml.Wpf.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')" />
   </Choose>
   <ItemGroup>
     <Compile Include="Events.fs" />
@@ -98,6 +77,22 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="FSharp.ViewModule">
+      <HintPath>..\packages\FSharp.ViewModule.Core.0.9.9.3\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\FSharp.ViewModule.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FsXaml.Wpf">
+      <HintPath>..\packages\FsXaml.Wpf.2.1.0\lib\net45\FsXaml.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FsXaml.Wpf.Blend">
+      <HintPath>..\packages\FsXaml.Wpf.Blend.2.1.0\lib\net45\FsXaml.Wpf.Blend.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FsXaml.Wpf.TypeProvider">
+      <HintPath>..\packages\FsXaml.Wpf.2.1.0\lib\net45\FsXaml.Wpf.TypeProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -111,7 +106,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Expression.Blend.Sdk\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
