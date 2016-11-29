@@ -3,9 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:ViewModels;assembly=FsSnowGlobe"
     xmlns:events="clr-namespace:Events;assembly=FsSnowGlobe"
-    xmlns:fsxaml="http://github.com/fsprojects/FsXaml"
-    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" 
-    fsxaml:ViewController.Custom="{x:Type local:MainViewController}"
+    xmlns:fsxaml="clr-namespace:FsXaml;assembly=FsXaml.Wpf.Blend"
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"     
     Title="F# Advent 2015 - Snow Globe" Height="760"  Width="1280" WindowStyle="SingleBorderWindow" ResizeMode="CanMinimize" Background="Black" >
     <Window.DataContext>
         <local:MainViewModel />
